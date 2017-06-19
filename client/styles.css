@@ -1,0 +1,13 @@
+.jumbotron {
+   text-align: center;
+}
+
+#textbox {
+    display: inline-block
+}
+
+.text {
+    position: center;
+    vertical-align: middle;
+    text-align: center;
+}

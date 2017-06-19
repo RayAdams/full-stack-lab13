@@ -30,7 +30,7 @@ var server = http.createServer(function(req, res) {
                         req.on('end', function(){
                             var newChirp = JSON.parse(incomingData);
                             currentChirps.push(newChirp);
-                            fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(currentChirps), function (err, data){
+                            fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(currentChirps), function (err){
                                 if (err){
                                     console.log(err);
                                 }
