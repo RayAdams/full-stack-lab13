@@ -4,6 +4,7 @@ var url = require('url');
 var path = require('path');
 
 var clientPath = path.join(__dirname, '../client');
+var dataPath = path.join(__dirname, 'data.json');
 
 var server = http.createServer(function(req, res) {
         var urlData = url.parse(req.url, true);
@@ -14,12 +15,14 @@ var server = http.createServer(function(req, res) {
         else if (urlData.pathname === '/api/chirps'){
             if (req.method === "GET") {
                     res.writeHead(200, {"Content-Type": "application/json"});                    
-                    fs.createReadStream(path.join(__dirname, 'data.json')).pipe(res);
+                    fs.createReadStream(dataPath).pipe(res);
             }
             else if (req.method === "POST"){
-                fs.readFile(path.join(__dirname, 'data.json'), 'utf8', function (err, data){
+                fs.readFile(dataPath, 'utf8', function (err, data){
                     if (err){
                         console.log(err);
+                        res.writeHead(500, {'Content-Type': 'text/plain'});
+                        res.end('Internal Server Error');
                     }
                     else {
                         var currentChirps = JSON.parse(data);
@@ -30,13 +33,15 @@ var server = http.createServer(function(req, res) {
                         req.on('end', function(){
                             var newChirp = JSON.parse(incomingData);
                             currentChirps.push(newChirp);
-                            fs.writeFile(path.join(__dirname, 'data.json'), JSON.stringify(currentChirps), function (err){
+                            fs.writeFile(dataPath, JSON.stringify(currentChirps), function (err){
                                 if (err){
                                     console.log(err);
+                                    res.writeHead(500, {'Content-Type': 'text/plain'});
+                                    res.end('Internal Server Error');
                                 }
                                 else {
-                                    res.writeHead(201, {"Content-Type": "application/json"});
-                                    res.end('{}');
+                                    res.writeHead(201);
+                                    res.end();
                                 }
                             });
                         });
@@ -45,57 +50,33 @@ var server = http.createServer(function(req, res) {
                 });
             }
         } 
-        else if (req.method === 'GET'){
-            var filePath = path.join(clientPath, urlData.pathname);
-            var readStream = fs.createReadStream(filePath);
-            readStream.on('error', function(e){
-                res.writeHead(404, {'Content-Type': 'text/plain'});
-                res.end('File Not Found');
-            });
-            var extension = path.extname(filePath);
+        else if (req.method === 'GET') {
+            var extension = path.extname(urlData.pathname);
             var contentType;
             //if adding image files, will have to add png/img
-            if (extension === '.html'){
-                contentType = 'text/html';
-            } 
-            else if (extension === '.css'){
-                contentType = 'text/css';
-            } 
-            else if (extension === '.js'){
-                contentType = 'text/javascript';
-            } 
-            else {
-                contentType = 'text/plain';
+            switch (extension) {
+                case '.html': 
+                    contentType = 'text/html';
+                    break;
+                case '.css':
+                     contentType = 'text/css';
+                     break;
+                case '.js':
+                    contentType = 'text/javascript';
+                    break;
+                default:
+                    contentType = 'text/plain';
             }
+
+            var readStream = fs.createReadStream(path.join(clientPath, urlData.pathname));
+            readStream.on('error', function(err){
+                res.writeHead(404);
+                res.end('File Not Found');
+            });
 
             res.writeHead(200, {'Content-Type': contentType});
             readStream.pipe(res);
         }
 });
-        // else {
-        //     //error handling
-        //     var filePath = path.join(clientPath, urlData.pathname);
-        //     var readStream = fs.createReadStream(filePath);
-        //     readStream.on('error', function(e){
-        //         res.writeHead(404, {'Content-Type': 'text/plain'});
-        //         res.end('File Not Found');
-        //     });
-        //     //extension handling
-        //     var extension = path.extname(filePath);
-        //     var contentType;
-        //     if(extension === '.html'){
-        //         contentType = 'text/html';
-        //     } else if(extension === '.css'){
-        //         contentType = 'text/css';
-        //     } else if(extension === '.js'){
-        //         contentType = 'text/javascript';
-        //     } else {
-        //         res.writeHead(404, {'Content-Type': 'text/plain'});
-        //         res.end('File Not Found');
-        //     }
-        //     // res.writeHead(200, {'Content-Type': contentType});
-        //     // res.end();
-        // }
-// });
 
 server.listen(3000);

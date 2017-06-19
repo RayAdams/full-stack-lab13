@@ -15,18 +15,18 @@
     <form>
         <div class="row">
             <div class="col-sm-6 text">
-                <input type="text" id='textBox' class="form-control text" placeholder="Update Status">
+                <input type="text" id='chirp-field' class="form-control text" placeholder="Update Status">
             </div>
             <div class="col-xs-2">
-                <button id='btn' class="btn btn-primary btn-lg" type='submit'>Chirp!</button>
+                <button id='chirp-btn' disabled class="btn btn-primary btn-lg" type='submit'>Chirp!</button>
             </div>
         </div>
     </form>
     </div>
 
     <div class="container">
-        <h3>What's Trending:</h3>
-        <div class="container tweet-area">
+        <h3>Your Top Chirps:</h3>
+        <div class="container tweet-area" id="chirp-list">
         </div>
     </div>
 
@@ -34,13 +34,13 @@
         <form action='http://localhost:3000/api/chirps' method='GET'>
         <div class="col-xs-2">
                 <button id='pageBtn' class="btn btn-primary btn-sm" type='submit'>See all Chirps</button>
-            </div>
+        </div>
         </form>
     </div>
 <script
   src="http://code.jquery.com/jquery-3.2.1.js"
   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
   crossorigin="anonymous"></script>
-  <script src="frontIndex.js"></script>
+  <script src="classIndex.js"></script>
     </body>
 </html>
